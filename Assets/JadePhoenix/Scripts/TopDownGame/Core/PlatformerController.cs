@@ -212,7 +212,7 @@ namespace JadePhoenix.Gameplay
             if (_isGrounded && !IsJumping)
             {
                 // Reset vertical velocity when grounded
-                _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, 0);
+                _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, -1);
             }
             else
             {
