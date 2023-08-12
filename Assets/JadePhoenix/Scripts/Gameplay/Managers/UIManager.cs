@@ -21,6 +21,8 @@ namespace JadePhoenix.Gameplay
         public GameObject VictoryScreen;
         public GameObject CreditsScreen;
 
+        public GameObject ChatBox;
+
         protected virtual void Start()
         {
             SetPauseScreen(false);
@@ -87,9 +89,6 @@ namespace JadePhoenix.Gameplay
         /// <summary>
         /// Updates the health bar based on current, min, and max health values.
         /// </summary>
-        /// <param name="currentHealth">Current health value.</param>
-        /// <param name="minHealth">Minimum possible health.</param>
-        /// <param name="maxHealth">Maximum possible health.</param>
         public virtual void UpdateHealthBar(float healthPercentage)
         {
             if (HealthSegment == null) { return; }
@@ -105,6 +104,11 @@ namespace JadePhoenix.Gameplay
 
             float damageTaken = 1.0f - healthPercentage;
             DamageSegment.fillAmount = damageTaken;
+        }
+
+        public virtual void ToggleChatBox(string text)
+        {
+
         }
 
         #region BUTTON METHODS

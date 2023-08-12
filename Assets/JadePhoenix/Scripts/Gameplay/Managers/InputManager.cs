@@ -23,7 +23,8 @@ namespace JadePhoenix.Gameplay
         public Vector2 Threshold = new Vector2(0.1f, 0.4f);
 
         public JP_Input.Button PauseButton { get; protected set; }
-        public JP_Input.Button ShootButton { get; protected set; } 
+        public JP_Input.Button ShootButton { get; protected set; }
+        public JP_Input.Button DashButton { get; protected set; }
         public Vector2 PrimaryMovement { get { return _primaryMovement; } }
 
         public List<JP_Input.Button> ButtonList;
@@ -64,7 +65,8 @@ namespace JadePhoenix.Gameplay
             ButtonList = new List<JP_Input.Button>
             {
                 (PauseButton = new JP_Input.Button(PlayerID, "Pause", PauseButtonDown, PauseButtonPressed, PauseButtonUp)),
-                (ShootButton = new JP_Input.Button(PlayerID, "Shoot", ShootButtonDown, ShootButtonPressed, ShootButtonUp))
+                (ShootButton = new JP_Input.Button(PlayerID, "Shoot", ShootButtonDown, ShootButtonPressed, ShootButtonUp)),
+                (DashButton = new JP_Input.Button(PlayerID, "Dash", DashButtonDown, DashButtonPressed, DashButtonUp)),
             };
         }
 
@@ -174,6 +176,10 @@ namespace JadePhoenix.Gameplay
         public virtual void ShootButtonDown() { ShootButton.State.ChangeState(JP_Input.ButtonStates.ButtonDown); }
         public virtual void ShootButtonPressed() { ShootButton.State.ChangeState(JP_Input.ButtonStates.ButtonPressed); }
         public virtual void ShootButtonUp() { ShootButton.State.ChangeState(JP_Input.ButtonStates.ButtonUp); }
+
+        public virtual void DashButtonDown() { DashButton.State.ChangeState(JP_Input.ButtonStates.ButtonDown); }
+        public virtual void DashButtonPressed() { DashButton.State.ChangeState(JP_Input.ButtonStates.ButtonPressed); }
+        public virtual void DashButtonUp() { DashButton.State.ChangeState(JP_Input.ButtonStates.ButtonUp); }
 
         #endregion
     }

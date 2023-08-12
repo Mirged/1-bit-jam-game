@@ -9,16 +9,15 @@ namespace JadePhoenix.Gameplay
         public KeyCode JumpKey = KeyCode.Space; // The key used to initiate a jump.
 
         // Parameters to track the state of the jump
-        private bool _jumpInput;
+        protected bool _jumpInput;
 
         // Animator hash
-        private int _jumpingParameter;
+        protected int _jumpingParameter;
 
         protected override void HandleInput()
         {
             // Check for jump input
             _jumpInput = Input.GetKeyDown(JumpKey);
-            //Debug.Log($"{this.GetType()}.HandleInput: JumpInput = {Input.GetKeyDown(JumpKey)}.", gameObject);
         }
 
         protected override void InitializeAnimatorParameters()
@@ -32,14 +31,19 @@ namespace JadePhoenix.Gameplay
 
             if (AbilityPermitted 
             && _jumpInput
-            && _movement.CurrentState != CharacterStates.MovementStates.Jumping 
-            && _movement.CurrentState != CharacterStates.MovementStates.Falling)
+            && _movement.CurrentState != CharacterStates.MovementStates.Jumping
+            && _movement.CurrentState != CharacterStates.MovementStates.Falling
+            && _movement.CurrentState != CharacterStates.MovementStates.Dashing)
             {
                 Jump();
             }
 
-            // Call the method to handle gravity in the PlatformerController
-            HandleGravity();
+            // Change our State based on whether the controller is falling.
+            if (_controller.IsFalling)
+            {
+                _movement.ChangeState(CharacterStates.MovementStates.Falling);
+                _controller.IsJumping = false;
+            }
 
             if (_controller.IsGrounded && _movement.CurrentState == CharacterStates.MovementStates.Falling)
             {
@@ -47,7 +51,7 @@ namespace JadePhoenix.Gameplay
             }
         }
 
-        private void Jump()
+        protected virtual void Jump()
         {
             // Apply jump force
             _controller.Rigidbody.velocity = new Vector2(_controller.Rigidbody.velocity.x, JumpForce);
@@ -55,18 +59,6 @@ namespace JadePhoenix.Gameplay
 
             // Notify PlatformerController to use jumping gravity
             _controller.IsJumping = true;
-        }
-
-        private void HandleGravity()
-        {
-            // Detect if the character has reached the peak of the jump
-            if (_movement.CurrentState == CharacterStates.MovementStates.Jumping && _controller.Rigidbody.velocity.y <= 0)
-            {
-                _movement.ChangeState(CharacterStates.MovementStates.Falling);
-
-                // Notify PlatformerController to use falling gravity
-                _controller.IsJumping = false;
-            }
         }
 
         public override void UpdateAnimator()

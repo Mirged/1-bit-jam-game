@@ -11,28 +11,28 @@ namespace JadePhoenix.Gameplay
     {
         #region PUBLIC VARIABLES
 
-        [Tooltip("The speed at which the character moves.")]
+        [ReadOnly, Tooltip("The speed at which the character is moving.")]
         public Vector2 Speed;
 
-        [Tooltip("The current velocity of the character.")]
+        [ReadOnly, Tooltip("The current velocity of the character.")]
         public Vector2 Velocity;
 
-        [Tooltip("The velocity of the character in the last frame.")]
+        [ReadOnly, Tooltip("The velocity of the character in the last frame.")]
         public Vector2 VelocityLastFrame;
 
-        [Tooltip("The current acceleration of the character.")]
+        [ReadOnly, Tooltip("The current acceleration of the character.")]
         public Vector2 Acceleration;
 
-        [Tooltip("The current movement direction and magnitude.")]
+        [ReadOnly, Tooltip("The current movement direction and magnitude.")]
         public Vector2 CurrentMovement;
 
-        [Tooltip("The current direction of the character's movement.")]
+        [ReadOnly, Tooltip("The current direction of the character's movement.")]
         public Vector2 CurrentDirection;
 
         [Tooltip("The friction affecting the character's movement.")]
         public float Friction;
 
-        [Tooltip("Additional force applied to the character.")]
+        [ReadOnly, Tooltip("Additional force applied to the character.")]
         public Vector2 AddedForce;
 
         [Tooltip("If true, the character can move freely; otherwise, movement is restricted.")]
@@ -61,6 +61,7 @@ namespace JadePhoenix.Gameplay
         [Header("Gravity Control")]
         [Tooltip("Gravity when character is ascending.")]
         public float JumpingGravityMultiplier = 0.5f; 
+
         [Tooltip("Gravity when character is descending.")]
         public float FallingGravityMultiplier = 1.5f; 
 
@@ -68,6 +69,7 @@ namespace JadePhoenix.Gameplay
         public Collider2D Collider { get { return _collider; } }
         public SpriteRenderer SpriteRenderer { get { return _spriteRenderer; } }
         public bool IsGrounded { get { return _isGrounded; } }
+        public bool IsFalling { get { return _rigidBody.velocity.y <= 0 && !_isGrounded; } }
         public bool IsJumping { get; set; }
 
         #endregion
@@ -209,6 +211,8 @@ namespace JadePhoenix.Gameplay
                 horizontalMovement = Vector2.Lerp(Vector2.right * Speed, horizontalMovement, Time.deltaTime * Friction);
             }
 
+            Vector2 newMovement = _rigidBody.position + (horizontalMovement + AddedForce) * Time.fixedDeltaTime;
+
             if (_isGrounded && !IsJumping)
             {
                 // Reset vertical velocity when grounded
@@ -222,12 +226,10 @@ namespace JadePhoenix.Gameplay
                 // Apply custom gravity
                 float gravityForce = _gravity * gravityMultiplier * Time.fixedDeltaTime;
                 _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, _rigidBody.velocity.y - gravityForce);
+
+                // Preserve vertical velocity (including custom gravity)
+                newMovement.y += _rigidBody.velocity.y * Time.fixedDeltaTime;
             }
-
-            Vector2 newMovement = _rigidBody.position + (horizontalMovement + AddedForce) * Time.fixedDeltaTime;
-
-            // Preserve vertical velocity (including custom gravity)
-            newMovement.y += _rigidBody.velocity.y * Time.fixedDeltaTime;
 
             _rigidBody.MovePosition(newMovement);
         }

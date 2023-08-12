@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace JadePhoenix.Tools
 {
-    public class Timer : MonoBehaviour
+    public class Timer
     {
         public string Label { get; private set; }
         /// The total duration of the timer
@@ -36,16 +36,20 @@ namespace JadePhoenix.Tools
         }
 
         /// <summary>
-        /// Starts the timer without resetting its ElapsedTime.
+        /// Starts the timer.
         /// </summary>
-        public virtual void StartTimer(bool invokeStart = true)
+        /// <param name="invokeStart">If true, wil invoke the OnTimerStarted event.</param>
+        /// <param name="resetTimer">If true, will reset ElapsedTime before starting the timer.</param>
+        public virtual void StartTimer(bool invokeStart = true, bool resetTimer = false)
         {
+            if (resetTimer) ResetTimer();
+
             if (IsRunning) return;
             IsRunning = true;
 
-            if (!invokeStart) return;
-            _onTimerStarted?.Invoke();
+            if (invokeStart) _onTimerStarted?.Invoke();
         }
+
         /// <summary>
         /// Stops the timer.
         /// </summary>
@@ -57,9 +61,9 @@ namespace JadePhoenix.Tools
         /// <summary>
         /// If the timer is running, updates the elapsed time.
         /// Disables the timer when it has reached the set Duration.
-        /// This should be called during the Update method of the relevant class.
+        /// This <b>must</b> be called during the Update method of the relevant class.
         /// </summary>
-        protected virtual void Update()
+        public virtual void UpdateTimer()
         {
             if (!IsRunning) return;
 

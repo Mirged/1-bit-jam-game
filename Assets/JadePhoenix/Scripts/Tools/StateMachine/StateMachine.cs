@@ -45,12 +45,17 @@ namespace JadePhoenix.Tools
     /// A generic state machine manager.
     /// </summary>
     /// <typeparam name="T">The type of the state enum.</typeparam>
+    [Serializable]
     public class StateMachine<T> : IStateMachine where T : struct, IComparable, IConvertible, IFormattable
     {
         /// Determines whether events should be triggered on state changes.
         public bool TriggerEvents { get; set; }
         /// The target GameObject associated with the state machine.
+        [ReadOnly]
         public GameObject Target;
+        /// Shows the current state in the inpector for Debugging purposes
+        [ReadOnly]
+        public T DebugCurrentState;
         /// The current state of the state machine.
         public T CurrentState { get; private set; }
         /// The previous state of the state machine.
@@ -79,6 +84,7 @@ namespace JadePhoenix.Tools
 
             PreviousState = CurrentState;
             CurrentState = newState;
+            DebugCurrentState = CurrentState;
 
             if (TriggerEvents)
             {
