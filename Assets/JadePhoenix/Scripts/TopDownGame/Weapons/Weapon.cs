@@ -68,7 +68,7 @@ namespace JadePhoenix.Gameplay
         protected float _reloadingCounter = 0f;
         protected bool _triggerReleased = false;
         protected bool _reloading = false;
-        protected TopDownController _controller;
+        protected PlatformerController _controller;
         protected CharacterMovement _characterMovement;
 
         #endregion
@@ -104,7 +104,7 @@ namespace JadePhoenix.Gameplay
             {
                 CharacterWeaponHandler = weaponHandler;
                 _characterMovement = Owner.GetComponent<CharacterMovement>();
-                _controller = Owner.GetComponent<TopDownController>();
+                _controller = Owner.GetComponent<PlatformerController>();
             }
         }
 

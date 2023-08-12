@@ -43,8 +43,8 @@ namespace JadePhoenix.Gameplay
         protected Vector3 _knockbackForce;
         protected float _startTime = 0f;
         protected Health _colliderHealth;
-        protected TopDownController _topDownController;
-        protected TopDownController _colliderTopDownController;
+        protected PlatformerController _topDownController;
+        protected PlatformerController _colliderTopDownController;
         protected Rigidbody _colliderRigidBody;
         protected Health _health;
         protected List<GameObject> _ignoredGameObjects;
@@ -75,7 +75,7 @@ namespace JadePhoenix.Gameplay
             }
             _ignoredGameObjects = new List<GameObject>();
             _health = GetComponent<Health>();
-            _topDownController = GetComponent<TopDownController>();
+            _topDownController = GetComponent<PlatformerController>();
             _boxCollider = GetComponent<BoxCollider2D>();
             _circleCollider = GetComponent<CircleCollider2D>();
 
@@ -154,8 +154,8 @@ namespace JadePhoenix.Gameplay
         /// </summary>
         protected virtual void OnCollideWithDamageable()
         {
-            // if what we're colliding with is a TopDownController, we apply a knockback force
-            _colliderTopDownController = _colliderHealth.gameObject.GetComponent<TopDownController>();
+            // if what we're colliding with is a PlatformerController, we apply a knockback force
+            _colliderTopDownController = _colliderHealth.gameObject.GetComponent<PlatformerController>();
             _colliderRigidBody = _colliderHealth.gameObject.GetComponent<Rigidbody>();
 
             if ((_colliderTopDownController != null) && (DamageCausedKnockbackForce != Vector3.zero) && (!_colliderHealth.Invulnerable) && (!_colliderHealth.ImmuneToKnockback))
@@ -165,7 +165,7 @@ namespace JadePhoenix.Gameplay
 
                 if (DamageCausedKnockbackDirection == KnockbackDirections.BasedOnSpeed)
                 {
-                    Vector3 totalVelocity = _colliderTopDownController.Speed + _velocity;
+                    Vector3 totalVelocity = (Vector3)_colliderTopDownController.Speed + _velocity;
                     _knockbackForce = Vector3.RotateTowards(DamageCausedKnockbackForce, totalVelocity.normalized, 10f, 0f);
                 }
                 if (DamageTakenKnockbackDirection == KnockbackDirections.BasedOnOwnerPosition)
@@ -216,10 +216,10 @@ namespace JadePhoenix.Gameplay
                 }
             }
 
-            // if what we're colliding with is a TopDownController, we apply a knockback force
+            // if what we're colliding with is a PlatformerController, we apply a knockback force
             if (_topDownController != null)
             {
-                Vector2 totalVelocity = _colliderTopDownController.Speed + _velocity;
+                Vector2 totalVelocity = _colliderTopDownController.Speed + (Vector2)_velocity;
                 Vector2 knockbackForce = Vector3.RotateTowards(DamageCausedKnockbackForce, totalVelocity.normalized, 10f, 0f);
 
                 if (DamageTakenKnockbackType == KnockbackStyles.AddForce)

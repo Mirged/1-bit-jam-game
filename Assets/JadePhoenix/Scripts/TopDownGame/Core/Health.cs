@@ -44,7 +44,7 @@ namespace JadePhoenix.Gameplay
 
         protected Vector3 _initialPosition;
         protected Entity _entity;
-        protected TopDownController _controller;
+        protected PlatformerController _controller;
         protected Collider _collider;
         protected bool _initialized = false;
 
@@ -83,7 +83,7 @@ namespace JadePhoenix.Gameplay
                 Model.SetActive(true);
             }
 
-            _controller = GetComponent<TopDownController>();
+            _controller = GetComponent<PlatformerController>();
             _collider = GetComponent<Collider>();
 
             _initialPosition = transform.position;

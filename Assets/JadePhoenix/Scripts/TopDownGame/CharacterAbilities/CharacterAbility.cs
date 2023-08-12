@@ -21,7 +21,7 @@ namespace JadePhoenix.Gameplay
         public bool AbilityInitialized { get { return _abilityInitialized; } }
 
         protected Character _character;
-        protected TopDownController _controller;
+        protected PlatformerController _controller;
         protected GameObject _model;
         protected Health _health;
         protected CharacterMovement _characterMovement;
@@ -98,7 +98,7 @@ namespace JadePhoenix.Gameplay
         {
             BindAnimator();
 
-            _controller = GetComponent<TopDownController>();
+            _controller = GetComponent<PlatformerController>();
             _health = GetComponent<Health>();
             _characterMovement = _character.GetAbility<CharacterMovement>();
 

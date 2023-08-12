@@ -41,7 +41,7 @@ namespace JadePhoenix.Gameplay
         [Tooltip("Target object for the camera.")]
         public GameObject CameraTarget;
 
-        public TopDownController TopDownController { get { return _controller; } }
+        public PlatformerController TopDownController { get { return _controller; } }
 
         public CharacterStates CharacterState { get; protected set; }
         public Animator Animator { get; protected set; }
@@ -50,7 +50,7 @@ namespace JadePhoenix.Gameplay
 
         // Protected Variables Group
         protected List<CharacterAbility> _characterAbilities;
-        protected TopDownController _controller;
+        protected PlatformerController _controller;
         protected AIBrain _aiBrain;
         protected const string _idleAnimationParameterName = "Idle";
         protected int _idleAnimationParameter;
@@ -118,7 +118,7 @@ namespace JadePhoenix.Gameplay
             SetInputManager();
 
             _characterAbilities = new List<CharacterAbility>(GetComponents<CharacterAbility>());
-            _controller = GetComponent<TopDownController>();
+            _controller = GetComponent<PlatformerController>();
             _aiBrain = GetComponent<AIBrain>();
 
             Transform cameraTarget = transform.Find("CameraTarget");

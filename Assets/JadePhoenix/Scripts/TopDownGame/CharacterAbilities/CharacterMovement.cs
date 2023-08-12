@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace JadePhoenix.Gameplay
 {
-    [RequireComponent(typeof(TopDownController))]
+    [RequireComponent(typeof(PlatformerController))]
     public class CharacterMovement : CharacterAbility
     {
         public float MovementSpeed;
