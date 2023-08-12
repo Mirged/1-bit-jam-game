@@ -1,5 +1,5 @@
 {
-    "name": "JadePhoenix.Game",
+    "name": "JadePhoenix.Gameplay",
     "rootNamespace": "",
     "references": [
         "GUID:8497de8d21ef590439c209fe6bc80bd1"

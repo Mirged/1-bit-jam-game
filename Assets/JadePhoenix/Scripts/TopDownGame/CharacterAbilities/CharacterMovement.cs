@@ -9,6 +9,8 @@ namespace JadePhoenix.Gameplay
     [RequireComponent(typeof(PlatformerController))]
     public class CharacterMovement : CharacterAbility
     {
+        #region PUBLIC VARIABLES
+
         public float MovementSpeed;
         public bool MovementForbidden;
 
@@ -28,9 +30,10 @@ namespace JadePhoenix.Gameplay
         public bool InterpolateMovementSpeed = false;
         public float MovementSpeedMultiplier;
 
+        #endregion
+
         protected float _movementSpeed;
         protected float _horizontalMovement;
-        protected float _verticalMovement;
         protected Vector3 _movementVector;
         protected Vector2 _currentInput = Vector2.zero;
         protected Vector2 _normalizedInput;
@@ -42,6 +45,15 @@ namespace JadePhoenix.Gameplay
         protected int _walkingAnimationParameter;
         protected int _idleAnimationParameter;
 
+        #region UNITY LIFECYCLE
+
+        protected virtual void FixedUpdate()
+        {
+            HandleMovement();
+        }
+
+        #endregion
+
         protected override void Initialization()
         {
             base.Initialization();
@@ -51,29 +63,33 @@ namespace JadePhoenix.Gameplay
             MovementForbidden = false;
         }
 
-        public override void ProcessAbility()
-        {
-            base.ProcessAbility();
-            HandleMovement();
-        }
-
         protected override void HandleInput()
         {
             if (InputAuthorized)
             {
                 _horizontalMovement = _horizontalInput;
-                _verticalMovement = _verticalInput;
             }
             else
             {
                 _horizontalMovement = 0f;
-                _verticalMovement = 0f;
             }
         }
 
-        protected virtual void FixedUpdate()
+        /// <summary>
+        /// On Respawn, resets the speed
+        /// </summary>
+        protected override void OnRespawn()
         {
-            HandleMovement();
+            ResetSpeed();
+            MovementForbidden = false;
+        }
+
+        protected override void InitializeAnimatorParameters()
+        {
+            //Debug.Log($"{this.GetType()}.InitializeAnimatorParameters: Initializing Movement parameters.", gameObject);
+
+            RegisterAnimatorParameter(_walkingAnimationParameterName, AnimatorControllerParameterType.Bool, out _walkingAnimationParameter);
+            RegisterAnimatorParameter(_idleAnimationParameterName, AnimatorControllerParameterType.Bool, out _idleAnimationParameter);
         }
 
         protected virtual void HandleMovement()
@@ -83,7 +99,6 @@ namespace JadePhoenix.Gameplay
             if (MovementForbidden)
             {
                 _horizontalMovement = 0f;
-                _verticalMovement = 0f;
             }
 
             if ((_controller.CurrentMovement.magnitude > IdleThreshold)
@@ -106,6 +121,20 @@ namespace JadePhoenix.Gameplay
 
         #region PUBLIC METHODS
 
+        public override void ProcessAbility()
+        {
+            base.ProcessAbility();
+            HandleMovement();
+        }
+
+        public override void UpdateAnimator()
+        {
+            //Debug.Log($"{this.GetType()}.UpdateAnimator: Updating Animator. Walking = [{_movement.CurrentState == CharacterStates.MovementStates.Walking}]", gameObject);
+
+            AnimatorExtensions.UpdateAnimatorBool(_animator, _walkingAnimationParameter, _movement.CurrentState == CharacterStates.MovementStates.Walking, _character.AnimatorParameters);
+            AnimatorExtensions.UpdateAnimatorBool(_animator, _idleAnimationParameter, _movement.CurrentState == CharacterStates.MovementStates.Idle, _character.AnimatorParameters);
+        }
+
         /// <summary>
         /// Resets this character's speed
         /// </summary>
@@ -125,7 +154,7 @@ namespace JadePhoenix.Gameplay
 
             // Store the horizontal and vertical input values
             _currentInput.x = _horizontalMovement;
-            _currentInput.y = _verticalMovement;
+            _currentInput.y = 0;
 
             // Normalize the input vector
             _normalizedInput = _currentInput.normalized;
@@ -155,7 +184,7 @@ namespace JadePhoenix.Gameplay
                 }
             }
 
-            // Assign the x and  components of the lerped input to the movement vector
+            // Assign the x components of the lerped input to the movement vector
             _movementVector.x = _lerpedInput.x;
             _movementVector.y = 0;
             _movementVector.z = _lerpedInput.y;
@@ -193,7 +222,6 @@ namespace JadePhoenix.Gameplay
         public virtual void SetMovement(Vector2 value)
         {
             _horizontalMovement = value.x;
-            _verticalMovement = value.y;
         }
 
         /// <summary>
@@ -205,40 +233,6 @@ namespace JadePhoenix.Gameplay
             _horizontalMovement = value;
         }
 
-        /// <summary>
-        /// Sets the vertical part of the movement
-        /// </summary>
-        /// <param name="value"></param>
-        public virtual void SetVerticalMovement(float value)
-        {
-            _verticalMovement = value;
-        }
-
         #endregion
-
-        /// <summary>
-        /// On Respawn, resets the speed
-        /// </summary>
-        protected override void OnRespawn()
-        {
-            ResetSpeed();
-            MovementForbidden = false;
-        }
-
-        protected override void InitializeAnimatorParameters()
-        {
-            //Debug.Log($"{this.GetType()}.InitializeAnimatorParameters: Initializing Movement parameters.", gameObject);
-
-            RegisterAnimatorParameter(_walkingAnimationParameterName, AnimatorControllerParameterType.Bool, out _walkingAnimationParameter);
-            RegisterAnimatorParameter(_idleAnimationParameterName, AnimatorControllerParameterType.Bool, out _idleAnimationParameter);
-        }
-
-        public override void UpdateAnimator()
-        {
-            //Debug.Log($"{this.GetType()}.UpdateAnimator: Updating Animator. Walking = [{_movement.CurrentState == CharacterStates.MovementStates.Walking}]", gameObject);
-
-            AnimatorExtensions.UpdateAnimatorBool(_animator, _walkingAnimationParameter, _movement.CurrentState == CharacterStates.MovementStates.Walking, _character.AnimatorParameters);
-            AnimatorExtensions.UpdateAnimatorBool(_animator, _idleAnimationParameter, _movement.CurrentState == CharacterStates.MovementStates.Idle, _character.AnimatorParameters);
-        }
     }
 }

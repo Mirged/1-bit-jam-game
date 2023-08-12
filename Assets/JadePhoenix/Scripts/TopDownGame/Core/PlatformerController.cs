@@ -42,6 +42,34 @@ namespace JadePhoenix.Gameplay
         [Tooltip("Layer mask to define what layers are considered as obstacles.")]
         public LayerMask ObstaclesLayerMask;
 
+        [Header("Ground Checking")]
+        [Tooltip("Offset from the character's center to the start of the ground check ray.")]
+        public Vector2 GroundCheckStartOffset;
+
+        [Tooltip("Direction of the ground check ray.")]
+        public Vector2 GroundCheckDirection = Vector2.down;
+
+        [Tooltip("Length of the ground check ray.")]
+        public float GroundCheckLength = 0.2f;
+
+        [Tooltip("Width between the two rays.")]
+        public float GroundCheckWidth = 0.5f;
+
+        [Tooltip("Layer mask to define what layers are considered as ground.")]
+        public LayerMask GroundLayerMask;
+
+        [Header("Gravity Control")]
+        [Tooltip("Gravity when character is ascending.")]
+        public float JumpingGravityMultiplier = 0.5f; 
+        [Tooltip("Gravity when character is descending.")]
+        public float FallingGravityMultiplier = 1.5f; 
+
+        public Rigidbody2D Rigidbody { get { return _rigidBody; } }
+        public Collider2D Collider { get { return _collider; } }
+        public SpriteRenderer SpriteRenderer { get { return _spriteRenderer; } }
+        public bool IsGrounded { get { return _isGrounded; } }
+        public bool IsJumping { get; set; }
+
         #endregion
 
         protected Vector2 _positionLastFrame;
@@ -49,6 +77,8 @@ namespace JadePhoenix.Gameplay
         protected Rigidbody2D _rigidBody;
         protected Collider2D _collider;
         protected SpriteRenderer _spriteRenderer;
+        protected bool _isGrounded;
+        protected const float _gravity = 9.18f;
 
         #region UNITY LIFECYCLE
 
@@ -84,23 +114,24 @@ namespace JadePhoenix.Gameplay
         /// </summary>
         protected virtual void FixedUpdate()
         {
+            CheckGround();
+
             ApplyImpact();
 
-            if (!FreeMovement) { return; }
+            HandleMovement();
+        }
 
-            if (Friction > 1)
-            {
-                CurrentMovement /= Friction;
-            }
+        private void OnDrawGizmos()
+        {
+            Vector2 rayOrigin = (Vector2)transform.position + GroundCheckStartOffset;
+            Vector2 rayOriginLeft = rayOrigin - new Vector2(GroundCheckWidth / 2, 0);
+            Vector2 rayOriginRight = rayOrigin + new Vector2(GroundCheckWidth / 2, 0);
+            Vector2 rayEndLeft = rayOriginLeft + GroundCheckDirection * GroundCheckLength;
+            Vector2 rayEndRight = rayOriginRight + GroundCheckDirection * GroundCheckLength;
 
-            if (Friction > 0 && Friction < 1)
-            {
-                CurrentMovement = Vector2.Lerp(Vector2.one * Speed, CurrentMovement, Time.deltaTime * Friction);
-            }
-
-            Vector2 newMovement = _rigidBody.position + (CurrentMovement + AddedForce) * Time.fixedDeltaTime;
-
-            _rigidBody.MovePosition(newMovement);
+            Gizmos.color = _isGrounded ? Color.green : Color.red;
+            Gizmos.DrawLine(rayOriginLeft, rayEndLeft);
+            Gizmos.DrawLine(rayOriginRight, rayEndRight);
         }
 
         #endregion
@@ -136,6 +167,21 @@ namespace JadePhoenix.Gameplay
         }
 
         /// <summary>
+        /// Checks if the character is on the ground using a raycast.
+        /// </summary>
+        protected virtual void CheckGround()
+        {
+            Vector2 rayOrigin = (Vector2)transform.position + GroundCheckStartOffset;
+            Vector2 rayOriginLeft = rayOrigin - new Vector2(GroundCheckWidth / 2, 0);
+            Vector2 rayOriginRight = rayOrigin + new Vector2(GroundCheckWidth / 2, 0);
+
+            RaycastHit2D hitLeft = Physics2D.Raycast(rayOriginLeft, GroundCheckDirection, GroundCheckLength, GroundLayerMask);
+            RaycastHit2D hitRight = Physics2D.Raycast(rayOriginRight, GroundCheckDirection, GroundCheckLength, GroundLayerMask);
+
+            _isGrounded = hitLeft.collider != null || hitRight.collider != null;
+        }
+
+        /// <summary>
         /// Applies an impact to the character's movement.
         /// </summary>
         protected virtual void ApplyImpact()
@@ -145,6 +191,45 @@ namespace JadePhoenix.Gameplay
                 _rigidBody.AddForce(_impact);
             }
             _impact = Vector2.Lerp(_impact, Vector2.zero, 5f * Time.deltaTime);
+        }
+
+        protected virtual void HandleMovement()
+        {
+            if (!FreeMovement) { return; }
+
+            Vector2 horizontalMovement = new Vector2(CurrentMovement.x, 0);
+
+            if (Friction > 1)
+            {
+                horizontalMovement /= Friction;
+            }
+
+            if (Friction > 0 && Friction < 1)
+            {
+                horizontalMovement = Vector2.Lerp(Vector2.right * Speed, horizontalMovement, Time.deltaTime * Friction);
+            }
+
+            if (_isGrounded && !IsJumping)
+            {
+                // Reset vertical velocity when grounded
+                _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, 0);
+            }
+            else
+            {
+                // Determine gravity multiplier
+                float gravityMultiplier = _rigidBody.velocity.y > 0 && IsJumping ? JumpingGravityMultiplier : FallingGravityMultiplier;
+
+                // Apply custom gravity
+                float gravityForce = _gravity * gravityMultiplier * Time.fixedDeltaTime;
+                _rigidBody.velocity = new Vector2(_rigidBody.velocity.x, _rigidBody.velocity.y - gravityForce);
+            }
+
+            Vector2 newMovement = _rigidBody.position + (horizontalMovement + AddedForce) * Time.fixedDeltaTime;
+
+            // Preserve vertical velocity (including custom gravity)
+            newMovement.y += _rigidBody.velocity.y * Time.fixedDeltaTime;
+
+            _rigidBody.MovePosition(newMovement);
         }
 
         #region PUBLIC METHODS

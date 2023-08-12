@@ -22,7 +22,8 @@ namespace JadePhoenix.Gameplay
             Walking,
             Dashing,
             Attacking,
-            Drinking,
+            Jumping,
+            Falling,
         }
     }
 }

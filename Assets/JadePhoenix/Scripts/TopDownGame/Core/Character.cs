@@ -41,8 +41,7 @@ namespace JadePhoenix.Gameplay
         [Tooltip("Target object for the camera.")]
         public GameObject CameraTarget;
 
-        public PlatformerController TopDownController { get { return _controller; } }
-
+        public PlatformerController PlatformerController { get { return _controller; } }
         public CharacterStates CharacterState { get; protected set; }
         public Animator Animator { get; protected set; }
         public List<int> AnimatorParameters { get; set; }
