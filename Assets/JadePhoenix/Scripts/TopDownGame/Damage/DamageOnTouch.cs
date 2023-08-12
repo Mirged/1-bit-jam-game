@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     public class DamageOnTouch : MonoBehaviour
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using JadePhoenix.Tools;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     public class ProjectileWeapon : Weapon
     {

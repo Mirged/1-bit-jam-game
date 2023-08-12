@@ -1,7 +1,7 @@
 using JadePhoenix.Tools;
 using UnityEngine;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     public class Entity : MonoBehaviour
     {

@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     public class Health : MonoBehaviour
     {

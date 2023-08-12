@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(Collider2D))]

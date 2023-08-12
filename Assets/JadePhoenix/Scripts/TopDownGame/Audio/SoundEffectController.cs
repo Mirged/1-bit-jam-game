@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     [RequireComponent(typeof(AudioSource))]
     public class SoundEffectController : MonoBehaviour

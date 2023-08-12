@@ -2,7 +2,7 @@ using JadePhoenix.Tools;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     /// <summary>
     /// Handles the inputs given by the player, processing button states and movement.

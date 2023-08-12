@@ -1,7 +1,7 @@
 using JadePhoenix.Tools;
 using UnityEngine;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     /// <summary>
     /// Manages the pause state of the game, providing methods to toggle, set, and check the current pause state.

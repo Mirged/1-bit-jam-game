@@ -1,7 +1,7 @@
 using JadePhoenix.Tools;
 using UnityEngine;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     public class CharacterEvents : MonoBehaviour
     {
@@ -16,7 +16,7 @@ namespace JadePhoenix.TopDownGame
             public CharacterEventTypes EventType;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="TopDownGame.CharacterEvent"/> struct.
+            /// Initializes a new instance of the <see cref="Gameplay.CharacterEvent"/> struct.
             /// </summary>
             /// <param name="character">Character.</param>
             /// <param name="eventType">Event type.</param>

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace JadePhoenix.TopDownGame
+namespace JadePhoenix.Gameplay
 {
     public class CharacterStates : MonoBehaviour
     {
