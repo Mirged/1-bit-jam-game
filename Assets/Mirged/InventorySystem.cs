@@ -1,4 +1,4 @@
-using System.Collections
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,24 +6,24 @@ namespace Mirged
 {
     public class InventorySystem : MonoBehaviour
     {
-        [SerializeField]
-        private int maxItemCount;
-
-        [SerializeField]
-        private int maxItemPerId;
-
         public List<Item> Items;
+
+        [SerializeField]
+        private int _maxItemCount;
+
+        [SerializeField]
+        private int _maxItemPerId;
 
         public void AddItem(Item item)
         {
-            if (Items.Count < maxItemCount)
+            if (Items.Count < _maxItemCount)
             {
-                Item existingItem = GetItemById(item.id);
+                Item existingItem = GetItemById(item.ID);
                 if (existingItem != null)
                 {
-                    if (existingItem.quantity + item.quantity <= maxItemPerId)
+                    if (existingItem.Quantity + item.Quantity <= _maxItemPerId)
                     {
-                        existingItem.quantity += item.quantity;
+                        existingItem.Quantity += item.Quantity;
                     }
                     else
                     {
@@ -53,7 +53,7 @@ namespace Mirged
 
         public Item GetItemById(int itemId)
         {
-            return Items.Find(x => x.id == itemId);
+            return Items.Find(x => x.ID == itemId);
         }
 
         public int GetItemQuantity(int itemId)
@@ -62,7 +62,7 @@ namespace Mirged
 
             if (item != null)
             {
-                return item.quantity;
+                return item.Quantity;
             }
 
             return 0;
@@ -74,7 +74,7 @@ namespace Mirged
 
             if (item != null)
             {
-                item.quantity = quantity;
+                item.Quantity = quantity;
             }
         }
     }
