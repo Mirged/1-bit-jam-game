@@ -11,16 +11,22 @@ namespace JadePhoenix.Gameplay
         [Header("Spawn")]
         [Tooltip("The offset position at which the projectile will spawn.")]
         public Vector3 ProjectileSpawnOffset = Vector3.zero;
+
         [Tooltip("The number of projectiles to spawn per shot.")]
         public int ProjectilesPerShot = 1;
+
         [Tooltip("The spread (in degrees) to apply randomly (or not) on each angle when spawning a projectile.")]
         public Vector3 Spread = Vector3.zero;
+
         [Tooltip("Whether or not the spread should be random (if not it'll be equally distributed).")]
         public bool RandomSpread = true;
 
-        [Tooltip("The projectile's spawn position.")]
+        [ReadOnly, Tooltip("The projectile's spawn position.")]
         public Vector3 SpawnPosition = Vector3.zero;
+
+        /// <summary>
         /// The object pooler used to spawn projectiles.
+        /// </summary>
         public ObjectPooler ObjectPooler { get; set; }
 
         protected Vector3 _randomSpreadDirection;
@@ -123,7 +129,7 @@ namespace JadePhoenix.Gameplay
 
                 Quaternion spread = Quaternion.Euler(_randomSpreadDirection);
 
-                projectile.SetDirection(spread * transform.forward, transform.rotation);
+                projectile.SetDirection(spread * transform.right, transform.rotation);
             }
 
             if (triggerObjectActivation && nextGameObject.GetComponent<PoolableObject>() != null)

@@ -17,19 +17,23 @@ namespace JadePhoenix.Gameplay
         [Header("Weapon Rotation")]
         [Tooltip("Speed of weapon rotation, 0 is instant.")]
         public float WeaponRotationSpeed = 1f;
+
         [Tooltip("Minimum angle for weapon rotation.")]
         public float MinimumAngle = -180f;
+
         [Tooltip("Maximum angle for weapon rotation.")]
         public float MaximumAngle = 180f;
 
         [Header("CameraTarget")]
         [Tooltip("Should the camera target move towards the reticle?")]
         public bool MoveCameraTargetTowardsReticle = false;
-        [Range(0f, 1f)]
-        [Tooltip("Offset for the camera target.")]
+
+        [Range(0f, 1f), Tooltip("Offset for the camera target.")]
         public float CameraTargetOffset = 0.3f;
+
         [Tooltip("Maximum distance for the camera target.")]
         public float CameraTargetMaxDistance = 10f;
+
         [Tooltip("Movement speed of the camera target.")]
         public float CameraTargetSpeed = 5f;
 
@@ -126,11 +130,10 @@ namespace JadePhoenix.Gameplay
         /// </summary>
         protected virtual void GetMouseAim()
         {
-            Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-            Vector2 mousePosition = new Vector2(ray.origin.x, ray.origin.y);
-            _direction = mousePosition;
-            _reticlePosition = _direction;
-            _direction -= (Vector2)transform.position;
+            Vector3 mouseScreenPosition = Input.mousePosition;
+            Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(mouseScreenPosition);
+            _direction = (Vector2)mouseWorldPosition - (Vector2)transform.position;
+            _reticlePosition = (Vector2)mouseWorldPosition;
             _currentAim = _direction;
         }
 
@@ -144,8 +147,7 @@ namespace JadePhoenix.Gameplay
                 CurrentAngle = Mathf.Atan2(_currentAim.y, _currentAim.x) * Mathf.Rad2Deg;
                 CurrentAngle += _additionalAngle;
                 CurrentAngle = Mathf.Clamp(CurrentAngle, MinimumAngle, MaximumAngle);
-                CurrentAngle = -CurrentAngle + 90f;
-                _lookRotation = Quaternion.Euler(0, CurrentAngle, 0);
+                _lookRotation = Quaternion.Euler(0, 0, CurrentAngle);
                 RotateWeapon(_lookRotation);
             }
             else
@@ -161,7 +163,14 @@ namespace JadePhoenix.Gameplay
         /// <param name="newRotation">The desired rotation for the weapon.</param>
         protected virtual void RotateWeapon(Quaternion newRotation)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, WeaponRotationSpeed * Time.deltaTime);
+            if (WeaponRotationSpeed == 0f)
+            {
+                transform.rotation = newRotation;
+            }
+            else
+            {
+                transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, WeaponRotationSpeed * Time.deltaTime);
+            }
         }
 
         /// <summary>

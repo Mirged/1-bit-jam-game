@@ -10,18 +10,23 @@ namespace JadePhoenix.Gameplay
         [Header("Movement")]
         [Tooltip("If true, the projectile will rotate at PreInitialization toward its rotation.")]
         public bool FaceDirection = true;
+
         [Tooltip("The speed of the object.")]
         public float Speed = 0f;
+
         [Tooltip("The acceleration of the object over time.")]
         public float Acceleration = 0f;
+
         [Tooltip("The current direction of the object.")]
         public Vector3 Direction = Vector3.left;
+
         [Tooltip("If true, the spawner can change the object's direction. Otherwise will use the direction set in the Inspector.")]
         public bool DirectionChangedBySpawner = true;
 
         [Header("Spawn")]
         [Tooltip("Initial delay before object can be destroyed.")]
         public float InitialInvulnerabilityDuration = 0f;
+
         [Tooltip("Can the projectile damage its owner?")]
         public bool DamageOwner = false;
 
@@ -32,7 +37,7 @@ namespace JadePhoenix.Gameplay
         protected DamageOnTouch _damageOnTouch;
         protected WaitForSeconds _initialInvulnerabilityDurationWFS;
         protected Collider _collider;
-        protected Rigidbody _rigidbody;
+        protected Rigidbody2D _rigidbody;
         protected Vector3 _initialLocalScale;
         protected bool _shouldMove = true;
         protected Health _health;
@@ -91,13 +96,13 @@ namespace JadePhoenix.Gameplay
         /// <summary>
         /// PreInitializes the projectile.
         /// </summary>
-        private void PreInitialization()
+        protected virtual void PreInitialization()
         {
             _initialSpeed = Speed;
             _health = GetComponent<Health>();
             _collider = GetComponent<Collider>();
             _damageOnTouch = GetComponent<DamageOnTouch>();
-            _rigidbody = GetComponent<Rigidbody>();
+            _rigidbody = GetComponent<Rigidbody2D>();
             _initialInvulnerabilityDurationWFS = new WaitForSeconds(InitialInvulnerabilityDuration);
             _initialLocalScale = transform.localScale;
         }
@@ -151,7 +156,7 @@ namespace JadePhoenix.Gameplay
         public virtual void Movement()
         {
             _movement = Direction * (Speed / 10) * Time.deltaTime;
-            //transform.Translate(_movement,Space.World);
+            //Debug.Log($"{this.GetType()}.Movement: Direction: {Direction}, Speed: {Speed}, Movement: {_movement}", gameObject);
             if (_rigidbody != null)
             {
                 _rigidbody.MovePosition(this.transform.position + _movement);

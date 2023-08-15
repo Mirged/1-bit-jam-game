@@ -1,5 +1,109 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &839742941
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 839742942}
+  - component: {fileID: 839742944}
+  - component: {fileID: 839742943}
+  - component: {fileID: 839742945}
+  m_Layer: 0
+  m_Name: Weapon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &839742942
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839742941}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2531718578485025192}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &839742944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839742941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48dc384b94c6f2449a994b9009d77081, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TriggerMode: 1
+  DelayBeforeUse: 0
+  DelayBeforeUseReleaseInterruption: 1
+  TimeBetweenUses: 0.05
+  TimeBetweenUsesReleaseInterruption: 1
+  MagazineBased: 0
+  MagazineSize: 30
+  ReloadTime: 2
+  AmmoConsumedPerShot: 1
+  CurrentAmmoLoaded: 0
+  RecoilForce: 0
+  InitializeOnStart: 0
+  Interruptable: 0
+  WeaponState:
+    Target: {fileID: 0}
+    DebugCurrentState: 0
+  ProjectileSpawnOffset: {x: 0.5, y: 0, z: 0}
+  ProjectilesPerShot: 1
+  Spread: {x: 0, y: 0, z: 0}
+  RandomSpread: 1
+  SpawnPosition: {x: 0.5, y: 0, z: 0}
+--- !u!114 &839742943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839742941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ec1c300d1eb0549b4768be301271dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MutualizeWaitingPools: 0
+  NestWaitingPool: 1
+  ObjectToPool: {fileID: 4571430199656771922, guid: 811956a2fdfafbc4faad1cbc67466f2a, type: 3}
+  PoolCount: 20
+  PoolCanExpand: 1
+--- !u!114 &839742945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839742941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d325b23b4bde48c45a6d37d55652ba4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AimControl: 1
+  WeaponRotationSpeed: 0
+  MinimumAngle: -180
+  MaximumAngle: 180
+  MoveCameraTargetTowardsReticle: 0
+  CameraTargetOffset: 0.3
+  CameraTargetMaxDistance: 10
+  CameraTargetSpeed: 5
 --- !u!1 &2531718578174552318
 GameObject:
   m_ObjectHideFlags: 0
@@ -47,6 +151,7 @@ GameObject:
   - component: {fileID: 2531718578485025197}
   - component: {fileID: 2531718578485025195}
   - component: {fileID: 1752532131148012417}
+  - component: {fileID: 23572453}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -68,6 +173,7 @@ Transform:
   m_Children:
   - {fileID: 2531718579351218035}
   - {fileID: 2531718578174552313}
+  - {fileID: 839742942}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -257,6 +363,27 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   Cooldown: 0.2
+--- !u!114 &23572453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2531718578485025170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e33182dee14a7e4db2345ad239c3fb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AbilityPermitted: 1
+  ContinuousPress: 0
+  GettingHitInterruptsAttack: 0
+  BufferInput: 0
+  NewInputExtendsBuffer: 0
+  MaxBufferDuration: 0.25
+  ProjectileSpawn: {fileID: 0}
+  CurrentWeapon: {fileID: 839742944}
+  WeaponID: 1
 --- !u!1 &2531718579351218032
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,8 +454,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 287830063
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}

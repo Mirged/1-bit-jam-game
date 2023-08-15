@@ -55,7 +55,8 @@ namespace JadePhoenix.Gameplay
         protected Color _gizmosColor;
         protected Vector3 _gizmoSize;
         protected Vector3 _gizmoOffset;
-        protected Transform _gizmoTransform;
+
+        #region UNITY LIFECYCLE
 
         /// <summary>
         /// Initialization
@@ -64,6 +65,56 @@ namespace JadePhoenix.Gameplay
         {
             Initialization();
         }
+
+        protected virtual void Update()
+        {
+            ComputeVelocity();
+        }
+
+        /// <summary>
+        /// OnEnable we set the start time to the current timestamp
+        /// </summary>
+        protected virtual void OnEnable()
+        {
+            _startTime = Time.time;
+        }
+
+        /// <summary>
+        /// draws a cube or sphere around the damage area
+        /// </summary>
+        protected virtual void OnDrawGizmos()
+        {
+            Gizmos.color = _gizmosColor;
+
+            if (_boxCollider != null)
+            {
+                if (_boxCollider.enabled)
+                {
+                    JP_Debug.DrawGizmoCube(this.transform, _boxCollider.offset, _boxCollider.size, false);
+                }
+                else
+                {
+                    JP_Debug.DrawGizmoCube(this.transform, _boxCollider.offset, _boxCollider.size, true);
+                }
+            }
+
+            if (_circleCollider != null)
+            {
+                // Rotate the circle offset by the transform's rotation
+                Vector2 rotatedOffset = this.transform.rotation * _circleCollider.offset;
+
+                if (_circleCollider.enabled)
+                {
+                    Gizmos.DrawSphere((Vector2)this.transform.position + rotatedOffset, _circleCollider.radius * transform.localScale.x);
+                }
+                else
+                {
+                    Gizmos.DrawWireSphere((Vector2)this.transform.position + rotatedOffset, _circleCollider.radius * transform.localScale.x);
+                }
+            }
+        }
+
+        #endregion
 
         protected virtual void Initialization()
         {
@@ -83,11 +134,6 @@ namespace JadePhoenix.Gameplay
             _gizmosColor.a = 0.25f;
 
             DamageCaused = BaseDamage;
-        }
-
-        protected virtual void Update()
-        {
-            ComputeVelocity();
         }
 
         protected virtual void ComputeVelocity()
@@ -299,48 +345,5 @@ namespace JadePhoenix.Gameplay
         }
 
         #endregion
-
-        /// <summary>
-        /// OnEnable we set the start time to the current timestamp
-        /// </summary>
-        protected virtual void OnEnable()
-        {
-            _startTime = Time.time;
-        }
-
-        /// <summary>
-        /// draws a cube or sphere around the damage area
-        /// </summary>
-        protected virtual void OnDrawGizmos()
-        {
-            Gizmos.color = _gizmosColor;
-
-            if (_boxCollider != null)
-            {
-                if (_boxCollider.enabled)
-                {
-                    JP_Debug.DrawGizmoCube(this.transform, _boxCollider.offset, _boxCollider.size, false);
-                }
-                else
-                {
-                    JP_Debug.DrawGizmoCube(this.transform, _boxCollider.offset, _boxCollider.size, true);
-                }
-            }
-
-            if (_circleCollider != null)
-            {
-                // Rotate the circle offset by the transform's rotation
-                Vector2 rotatedOffset = this.transform.rotation * _circleCollider.offset;
-
-                if (_circleCollider.enabled)
-                {
-                    Gizmos.DrawSphere((Vector2)this.transform.position + rotatedOffset, _circleCollider.radius);
-                }
-                else
-                {
-                    Gizmos.DrawWireSphere((Vector2)this.transform.position + rotatedOffset, _circleCollider.radius);
-                }
-            }
-        }
     }
 }

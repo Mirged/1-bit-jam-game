@@ -94,6 +94,7 @@ namespace JadePhoenix.Gameplay
             {
                 if ((CurrentWeapon.TriggerMode == Weapon.TriggerModes.Auto) && (_inputManager.ShootButton.State.CurrentState == JP_Input.ButtonStates.ButtonPressed))
                 {
+                    //Debug.Log($"{this.GetType()}.HandleInput: Weapon TriggerMode is Auto and button held, ShootStart called.", gameObject);
                     ShootStart();
                 }
             }

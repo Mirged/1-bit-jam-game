@@ -196,6 +196,7 @@ namespace JadePhoenix.Gameplay
             {
                 if ((TriggerMode == TriggerModes.Auto) && !_triggerReleased)
                 {
+                    //Debug.Log($"{this.GetType()}.CaseWeaponDelayBetweenUses: Weapon TriggerMode is Auto and TriggerReleased equals = {_triggerReleased}, ShootRequest called.", gameObject);
                     ShootRequest();
                 }
                 else
