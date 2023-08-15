@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace JadePhoenix.Tools
@@ -23,11 +24,11 @@ namespace JadePhoenix.Tools
     public class MultipleObjectPooler : ObjectPooler
     {
         public List<MultipleObjectPoolerObject> Pool;
+        public Dictionary<string, ObjectPool> ObjectPoolsByObjectType;
 
         protected List<GameObject> _pooledGameObjects;
         protected List<GameObject> _pooledGameObjectsOriginalOrder;
         protected List<MultipleObjectPoolerObject> _randomizedPool;
-        protected Dictionary<GameObject, ObjectPool> _objectPoolsByObjectType;
         protected int _currentIndex = 0;
 
         /// <summary>
@@ -74,24 +75,28 @@ namespace JadePhoenix.Tools
             }
 
             // Store the original order of pooled objects for future reference (optional).
-            _pooledGameObjectsOriginalOrder = new List<GameObject>(_objectPoolsByObjectType.Values.SelectMany(pool => pool.PooledObjects));
+            _pooledGameObjectsOriginalOrder = new List<GameObject>(ObjectPoolsByObjectType.Values.SelectMany(pool => pool.PooledObjects));
         }
 
         protected override void CreateWaitingPool()
         {
-            if (!NestWaitingPool) { return; }
+            if (!NestWaitingPool)
+            {
+                Debug.Log($"{this.GetType()}.CreateWaitingPool: NestWaitingPool is false, exiting method.", gameObject); 
+                return;
+            }
 
             // Initialize the dictionary to store waiting pools for each unique object.
-            if (_objectPoolsByObjectType == null)
+            if (ObjectPoolsByObjectType == null)
             {
-                _objectPoolsByObjectType = new Dictionary<GameObject, ObjectPool>();
+                ObjectPoolsByObjectType = new Dictionary<string, ObjectPool>();
             }
 
             for (int i = 0; i < Pool.Count; i++)
             {
-                GameObject objToPool = Pool[i].GameObjectToPool;
+                string objToPool = Pool[i].GameObjectToPool.name;
 
-                if (!_objectPoolsByObjectType.ContainsKey(objToPool) || !_objectPoolsByObjectType[objToPool])
+                if (!ObjectPoolsByObjectType.ContainsKey(objToPool) || !ObjectPoolsByObjectType[objToPool])
                 {
                     // Create a new waiting pool for each unique object type.
                     GameObject waitingPool = GameObject.Find(DetermineObjectPoolName(objToPool));
@@ -100,12 +105,13 @@ namespace JadePhoenix.Tools
                     {
                         // Create a container that will hold all instances created for this object type.
                         waitingPool = new GameObject(DetermineObjectPoolName(objToPool));
-                        _objectPoolsByObjectType[objToPool] = waitingPool.AddComponent<ObjectPool>();
-                        _objectPoolsByObjectType[objToPool].PooledObjects = new List<GameObject>();
+                        // Add pooled object to Dictionary using objToPool as the Key and the ObjectPool component as the Value.
+                        ObjectPoolsByObjectType[objToPool] = waitingPool.AddComponent<ObjectPool>();
+                        ObjectPoolsByObjectType[objToPool].PooledObjects = new List<GameObject>();
                     }
                     else
                     {
-                        _objectPoolsByObjectType[objToPool] = waitingPool.GetComponent<ObjectPool>();
+                        ObjectPoolsByObjectType[objToPool] = waitingPool.GetComponent<ObjectPool>();
                     }
                 }
             }
@@ -122,13 +128,13 @@ namespace JadePhoenix.Tools
             newGameObject.gameObject.SetActive(false);
             if (NestWaitingPool)
             {
-                ObjectPool pool = _objectPoolsByObjectType[typeOfObject];
+                ObjectPool pool = ObjectPoolsByObjectType[typeOfObject.name];
                 newGameObject.transform.SetParent(pool.transform);
             }
             newGameObject.name = typeOfObject.name;
 
             // Instead of adding to _pooledGameObjects, we add the object to the corresponding waiting pool.
-            _objectPoolsByObjectType[typeOfObject].PooledObjects.Add(newGameObject);
+            ObjectPoolsByObjectType[typeOfObject.name].PooledObjects.Add(newGameObject);
 
             return newGameObject;
         }
@@ -144,7 +150,7 @@ namespace JadePhoenix.Tools
             {
                 ResetCurrentIndex();
             }
-            MultipleObjectPoolerObject searchedObject = GetPoolObject(_pooledGameObjectsOriginalOrder[_currentIndex].gameObject);
+            MultipleObjectPoolerObject searchedObject = GetObjectPool(_pooledGameObjectsOriginalOrder[_currentIndex].gameObject.name);
 
             if (_currentIndex >= _pooledGameObjectsOriginalOrder.Count) { return null; }
             if (!searchedObject.Enabled) { _currentIndex++; return null; }
@@ -194,13 +200,16 @@ namespace JadePhoenix.Tools
             return null;
         }
 
-        protected virtual MultipleObjectPoolerObject GetPoolObject(GameObject gameObject)
+        protected virtual MultipleObjectPoolerObject GetObjectPool(string objectPoolName)
         {
-            if (gameObject == null) { return null; }
+            if (objectPoolName == null) { return null; }
 
             foreach (MultipleObjectPoolerObject poolerObject in Pool)
             {
-                if (gameObject.name.Equals(poolerObject.GameObjectToPool.name)) { return poolerObject; }
+                if (objectPoolName.Equals(poolerObject.GameObjectToPool.name)) 
+                { 
+                    return poolerObject; 
+                }
             }
             return null;
         }
@@ -228,27 +237,20 @@ namespace JadePhoenix.Tools
             }
             else
             {
-                GameObject searchedObject = FindObject(searchedName, _pooledGameObjectsOriginalOrder);
-
-                if (searchedObject == null)
-                {
-                    return null;
-                }
-
                 // Check if the key exists in the dictionary.
-                if (_objectPoolsByObjectType.ContainsKey(searchedObject))
+                if (ObjectPoolsByObjectType.ContainsKey(searchedName))
                 {
-                    if (GetPoolObject(searchedObject).PoolCanExpand)
+                    MultipleObjectPoolerObject foundObject = GetObjectPool(searchedName);
+                    if (foundObject.PoolCanExpand)
                     {
-                        GameObject newGameObject = Instantiate(searchedObject);
-                        _objectPoolsByObjectType[searchedObject].PooledObjects.Add(newGameObject);
+                        GameObject newGameObject = AddOneObjectToThePool(foundObject.GameObjectToPool);
                         return newGameObject;
                     }
                 }
                 else
                 {
                     // Handle the case where the searchedObject is not in the dictionary.
-                    Debug.LogError($"The object {searchedObject.name} is not in the _objectPoolsByObjectType dictionary.");
+                    Debug.LogError($"{this.GetType()}.GetPooledGameObjectOfType: The object {searchedName} is not in the ObjectPoolsByObjectType dictionary.");
                 }
             }
 
@@ -263,7 +265,7 @@ namespace JadePhoenix.Tools
         /// <returns>The object.</returns>
         /// <param name="searchedName">The name of the object to find in the pool.</param>
         /// <param name="list">The list of objects to search in.</param>
-        protected virtual GameObject FindObject(string searchedName, List<GameObject> list)
+        public virtual GameObject FindObject(string searchedName, List<GameObject> list)
         {
             for (int i = 0; i < list.Count; i++)
             {

@@ -4,14 +4,28 @@ using UnityEngine;
 
 namespace JadePhoenix.Tools
 {
+    /// <summary>
+    /// SimpleObjectPooler is a class derived from ObjectPooler, responsible for pooling game objects.
+    /// It handles the creation, management, and retrieval of pooled objects of a single type.
+    /// </summary>
     public class SimpleObjectPooler : ObjectPooler
     {
+        [Tooltip("The GameObject that the pool will manage.")]
         public GameObject ObjectToPool;
+
+        [Tooltip("The initial number of objects in the pool.")]
         public int PoolCount = 20;
+
+        [Tooltip("Determines whether the pool can expand if more objects are needed.")]
         public bool PoolCanExpand = true;
 
+        // Protected list holding the pooled GameObjects.
         protected List<GameObject> _pooledObjects;
 
+        /// <summary>
+        /// Fills the object pool with the specified GameObjects.
+        /// If the ObjectToPool is not defined, the method will exit early.
+        /// </summary>
         public override void FillObjectPool()
         {
             if (ObjectToPool == null) { return; }
@@ -36,11 +50,15 @@ namespace JadePhoenix.Tools
             }
         }
 
+        /// <summary>
+        /// Creates a new object and adds it to the pool.
+        /// </summary>
+        /// <returns>The newly created and added GameObject.</returns>
         protected virtual GameObject AddObjectToPool()
         {
             if (ObjectToPool == null)
             {
-                Debug.LogWarning("The "+gameObject.name+" ObjectPooler doesn't have any ObjectToPool defined.", gameObject);
+                Debug.LogWarning("The " + gameObject.name + " ObjectPooler doesn't have any ObjectToPool defined.", gameObject);
                 return null;
             }
 

@@ -7,10 +7,10 @@ namespace JadePhoenix.Tools
 {
     public class ObjectPooler : MonoBehaviour
     {
-        // If this is true, the pool will try not to create a new waiting pool if it finds one with the same name.
+        [Tooltip("If this is true, the pool will try not to create a new waiting pool if it finds one with the same name.")]
         public bool MutualizeWaitingPools = false;
-        // If this is true, all waiting and active objects will be regrouped under an empty game object.
-        // Otherwise, they will be kept at top level in the heirarchy.
+
+        [Tooltip("If this is true, all waiting and active objects will be regrouped under an empty game object. Otherwise, they will be kept at top level in the heirarchy.")]
         public bool NestWaitingPool = true;
 
         // Object used to group pooled objects.
@@ -56,9 +56,9 @@ namespace JadePhoenix.Tools
         /// </summary>
         /// <param name="objectToPool">The object that is being pooled.</param>
         /// <returns>The name of the object pool.</returns>
-        protected virtual string DetermineObjectPoolName(GameObject objectToPool)
+        protected virtual string DetermineObjectPoolName(string objectToPool)
         {
-            return $"[{this.GetType().Name}]_{this.name}: {objectToPool.name}";
+            return $"[{this.GetType().Name}]_{this.name}: {objectToPool}";
         }
 
         public virtual void FillObjectPool()
